@@ -628,7 +628,7 @@ class Todo_Custom_Field {
 									
 					$url = add_query_arg( 'checked', $this->items[$post_id]['tcf_task_checked'][0], $url);
 					
-					echo '<a href="' . $url .'">' . $this->items[$post_id]['progress']. '</a>';
+					echo '<a style="background:'.( $this->items[$post_id]['progress'] == 'done' ? '#3fd245' : '#FF9800' ).';min-width:45px;text-align:center;display:inline-block;color:#fff;padding:1px 5px;border-radius: 3px;font-weight: bold;font-size: 10px;" href="' . $url .'">' . $this->items[$post_id]['progress']. '</a>';
 				}
 				
 			break;
@@ -671,6 +671,12 @@ class Todo_Custom_Field {
 		
 			$new_tasks = $_REQUEST['todo_custom_field']['tasks'];
 			
+			// update term meta
+			
+			update_term_meta($term_id,'todo_custom_field',$_REQUEST['todo_custom_field']);
+									
+			// update term tasks
+			
 			$term = get_term( $term_id );
 			
 			foreach( $new_tasks as $e => $task ){
@@ -711,10 +717,6 @@ class Todo_Custom_Field {
 
 						$_REQUEST['todo_custom_field']['ids'][$e] = $task_id;
 					}
-					
-					// update post meta
-					
-					update_term_meta($term_id,'todo_custom_field',$_REQUEST['todo_custom_field']);
 					
 					// update task post id
 					
