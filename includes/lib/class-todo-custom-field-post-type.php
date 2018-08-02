@@ -120,6 +120,7 @@ class Todo_Custom_Field_Post_Type {
 	 * @return array           Modified messages
 	 */
 	public function updated_messages ( $messages = array() ) {
+		
 	  global $post, $post_ID;
 
 	  $messages[ $this->post_type ] = array(

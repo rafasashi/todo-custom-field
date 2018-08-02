@@ -237,9 +237,9 @@ class Todo_Custom_Field {
 			foreach( $post_types as $post_type ){
 			
 				add_filter( $post_type . '_custom_fields', array( $this, 'add_todo_custom_field_custom_fields' ));
-			
-				add_action( 'save_post_' . $post_type, array( $this, 'save_todo_custom_field' ), 10, 3 );
 			}
+			
+			add_action( 'post_updated', array( $this, 'save_todo_custom_field' ), 10, 3 );
 		}
 		
 		if( in_array( basename($_SERVER['SCRIPT_FILENAME']), array('term.php','edit-tags.php') ) ){
@@ -736,84 +736,87 @@ class Todo_Custom_Field {
 		}		
 	}	
 	
-	function save_todo_custom_field( $post_id, $post, $update ) {
+	function save_todo_custom_field( $post_id, $post, $old ) {
 		
-		// remove tasks
+		$post_type = $post->post_type;
 		
-		$old_tasks = get_post_meta( $post_id, 'todo_custom_field', true);
+		$post_types = $this->get_active_post_types();
 
-		foreach( $old_tasks['ids']  as $e => $id ){
+		if( in_array($post_type,$post_types) ){
 			
-			if( !isset($_REQUEST['todo_custom_field']['ids']) || empty($_REQUEST['todo_custom_field']['ids']) || !in_array($id, $_REQUEST['todo_custom_field']['ids']) ){
+			// remove tasks
+			
+			$old_tasks = get_post_meta( $post_id, 'todo_custom_field', true);
+
+			foreach( $old_tasks['ids']  as $e => $id ){
 				
-				wp_delete_post( $id, false );
+				if( !isset($_REQUEST['todo_custom_field']['ids']) || empty($_REQUEST['todo_custom_field']['ids']) || !in_array($id, $_REQUEST['todo_custom_field']['ids']) ){
+					
+					wp_delete_post( $id, false );
+				}
 			}
-		}
-		
-		// add new tasks
 			
-		if( isset($_REQUEST['todo_custom_field']['tasks']) ){
-		
-			$new_tasks = $_REQUEST['todo_custom_field']['tasks'];
-			
-			$post_type = get_post_type($post_id);
-			
-			foreach( $new_tasks as $e => $task ){
+			// add new tasks
 				
-				if( $e > 0 && isset($_REQUEST['todo_custom_field']['ids'][$e]) ){
-					
-					$id = intval($_REQUEST['todo_custom_field']['ids'][$e]);
-
-					if( $id > 0 && get_post($id) ){
-						
-						//update task
-						
-						$task_id = $_REQUEST['todo_custom_field']['ids'][$e];
-						
-						wp_update_post(array(
-							'ID' 			=> $task_id,
-							'post_author' 	=> get_current_user_id(),
-							'post_title' 	=> $task,
-							'post_status' 	=> 'publish',
-							'post_type' 	=> 'tcf-todo-task',
-							'post_parent' 	=> 0,
-							'menu_order' 	=> 0,
-						));
-					}
-					else{
-						
-						//insert task
-						
-						$task_id = wp_insert_post(array(
-						
-							'post_author' 	=> get_current_user_id(),
-							'post_title' 	=> $task,
-							'post_status' 	=> 'publish',
-							'post_type' 	=> 'tcf-todo-task',
-							'post_parent' 	=> 0,
-							'menu_order' 	=> 0,
-						));
-
-						$_REQUEST['todo_custom_field']['ids'][$e] = $task_id;
-					}
-					
-					// update post meta
-					
-					update_post_meta($post_id,'todo_custom_field',$_REQUEST['todo_custom_field']);
-					
-					// update task post id
-					
-					update_post_meta($task_id,'tcf_task_post_id',$post_id);
+			if( isset($_REQUEST['todo_custom_field']['tasks']) ){
 			
-					// update task object
+				$new_tasks = $_REQUEST['todo_custom_field']['tasks'];
+
+				foreach( $new_tasks as $e => $task ){
 					
-					update_post_meta($task_id,'tcf_task_object',$post_type);			
-			
-					// update task checked
-					
-					$checked = ( !empty($_REQUEST['todo_custom_field']['checked'][$e]) ? $_REQUEST['todo_custom_field']['checked'][$e] : 'off' );
-					
-					update_post_meta($task_id,'tcf_task_checked',$checked);
+					if( $e > 0 && isset($_REQUEST['todo_custom_field']['ids'][$e]) ){
+						
+						$task_id = intval($_REQUEST['todo_custom_field']['ids'][$e]);
+						
+						if( $task_id > 0 && get_post($task_id) ){
+							
+							//update task
+							
+							wp_update_post(array(
+								'ID' 			=> $task_id,
+								'post_author' 	=> get_current_user_id(),
+								'post_title' 	=> $task,
+								'post_status' 	=> 'publish',
+								'post_type' 	=> 'tcf-todo-task',
+								'post_parent' 	=> 0,
+								'menu_order' 	=> 0,
+							));
+						}
+						else{
+							
+							//insert task
+							
+							$task_id = wp_insert_post(array(
+							
+								'post_author' 	=> get_current_user_id(),
+								'post_title' 	=> $task,
+								'post_status' 	=> 'publish',
+								'post_type' 	=> 'tcf-todo-task',
+								'post_parent' 	=> 0,
+								'menu_order' 	=> 0,
+							));
+
+							$_REQUEST['todo_custom_field']['ids'][$e] = $task_id;
+						}
+						
+						// update post meta
+						
+						update_post_meta($post_id,'todo_custom_field',$_REQUEST['todo_custom_field']);
+						
+						// update task post id
+						
+						update_post_meta($task_id,'tcf_task_post_id',$post_id);
+				
+						// update task object
+						
+						update_post_meta($task_id,'tcf_task_object',$post_type);			
+				
+						// update task checked
+						
+						$checked = ( !empty($_REQUEST['todo_custom_field']['checked'][$e]) ? $_REQUEST['todo_custom_field']['checked'][$e] : 'off' );
+						
+						update_post_meta($task_id,'tcf_task_checked',$checked);
+					}
 				}
 			}
 		}

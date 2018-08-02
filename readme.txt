@@ -4,7 +4,7 @@ Tags: todo, tasks, checklist, todo list, project management, todo list
 Donate link: https://code.recuweb.com/download/todo-custom-field/
 Requires at least: 4.6
 Tested up to: 4.9.6
-Stable tag: 3.0.0
+Stable tag: 3.0.1
 License: GPLv3
 License URI: https://code.recuweb.com/product-licenses/
 
@@ -68,6 +68,10 @@ Automatic updates should work like a charm; as always though, ensure you backup 
 5. Monitor and filter all tasks
 
 == Changelog ==
+
+= 3.0.1 - 02/8/2018 =
+
+* Bug on post upadated fixed 
 
 = 3.0.0 - 28/6/2018 =
 
