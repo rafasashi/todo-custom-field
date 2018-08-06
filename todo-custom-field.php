@@ -3,13 +3,13 @@
  * Plugin Name: Todo Custom Field
  * Plugin URI: https://code.recuweb.com/download/todo-custom-field/
  * Description: Add a Todo Custom Field to Post Types and Taxonomies, create Tasks lists and monitor the list of Tasks
- * Version: 3.0.0
+ * Version: 3.0.1
  * Author: Rafasashi
  * Author URI: https://code.recuweb.com/about-us/
  * Requires at least: 4.6
- * Tested up to: 4.9.6
+ * Tested up to: 4.9.8
  *
- * Text Domain: todo_custom_field
+ * Text Domain: todo-custom-field
  * Domain Path: /lang/
  * 
  * Copyright: © 2018 Recuweb.

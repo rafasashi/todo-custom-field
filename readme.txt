@@ -3,7 +3,7 @@ Contributors: rafasashi
 Tags: todo, tasks, checklist, todo list, project management, todo list
 Donate link: https://code.recuweb.com/download/todo-custom-field/
 Requires at least: 4.6
-Tested up to: 4.9.6
+Tested up to: 4.9.8
 Stable tag: 3.0.1
 License: GPLv3
 License URI: https://code.recuweb.com/product-licenses/
