@@ -190,15 +190,20 @@ class Todo_Custom_Field {
 		
 			add_action( 'add_meta_boxes', function(){
 				
-				foreach($this->get_active_post_types() as $post_type){
-					
-					$this->admin->add_meta_box (
-					
-						'todo_custom_field',
-						__( 'Todo Tasks', 'todo-custom-field' ), 
-						array($post_type),
-						( $post_type == 'tcf-todo-list' ? 'advanced' : 'side' )
-					);
+				$post_types = $this->get_active_post_types();
+
+				if( !empty($post_types) ){
+				
+					foreach( $post_types as $post_type ){
+						
+						$this->admin->add_meta_box (
+						
+							'todo_custom_field',
+							__( 'Todo Tasks', 'todo-custom-field' ), 
+							array($post_type),
+							( $post_type == 'tcf-todo-list' ? 'advanced' : 'side' )
+						);
+					}
 				}
 			});
 			
@@ -232,11 +237,12 @@ class Todo_Custom_Field {
 			
 			//add todo in post types
 			
-			$post_types = $this->get_active_post_types();
+			if( $post_types = $this->get_active_post_types() ){
 			
-			foreach( $post_types as $post_type ){
-			
-				add_filter( $post_type . '_custom_fields', array( $this, 'add_todo_custom_field_custom_fields' ));
+				foreach( $post_types as $post_type ){
+				
+					add_filter( $post_type . '_custom_fields', array( $this, 'add_todo_custom_field_custom_fields' ));
+				}
 			}
 			
 			add_action( 'post_updated', array( $this, 'save_todo_custom_field' ), 10, 3 );
@@ -441,13 +447,16 @@ class Todo_Custom_Field {
 		
 		if( is_null($this->active_taxonomies) ){
 			
-			$valid = get_option('tcf_todo_taxonomies');
-			
-			foreach( $valid as  $e => $taxonomy ){
+			$valid = get_option('tcf_todo_taxonomies',array());
+
+			if( !empty($valid) ){
 				
-				if( !$this->is_valid_taxonomy($taxonomy) ){
+				foreach( $valid as  $e => $taxonomy ){
 					
-					unset( $valid[$e] );
+					if( !$this->is_valid_taxonomy($taxonomy) ){
+						
+						unset( $valid[$e] );
+					}
 				}
 			}
 			
@@ -461,19 +470,22 @@ class Todo_Custom_Field {
 		
 		if( is_null($this->active_post_types) ){
 			
-			$valid = get_option('tcf_todo_post_types');
-
-			foreach( $valid as  $e => $post_type ){
+			$valid = get_option('tcf_todo_post_types',array());
+			
+			if( !empty($valid) ){
 				
-				if( !$this->is_valid_post_type($post_type) ){
+				foreach( $valid as  $e => $post_type ){
 					
-					unset( $valid[$e] );
+					if( !$this->is_valid_post_type($post_type) ){
+						
+						unset( $valid[$e] );
+					}
 				}
 			}
 			
 			$valid[] = 'tcf-todo-list';
 			
-			$this->active_post_types = $valid;
+			$this->active_post_types = $valid;			
 		}
 		
 		return $this->active_post_types;
